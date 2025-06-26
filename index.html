@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To Do List </title>
+</head>
+
+<body>
+    <div class="todo">
+        <h1>To-Do List</h1>
+        <div>
+            <input type="text" id="taskInput" placeholder="Enter Text">
+            <button onclick="addTask()"> Add Task</button>
+        </div>
+        <ul id="taskList">
+        </ul>
+    </div>
+    <script>
+        let tasks = []
+        function addTask() {
+            const taskInput = document.getElementById('taskInput');
+            const taskText = taskInput.value.trim();
+            if (taskText !== '') {
+                tasks.push({ text: taskText, done: false });
+                displayTasks();
+                taskText = '';
+
+            }
+        }
+        function displayTasks() {
+            const taskList = document.getElementById('taskList');
+            taskList.innerHTML = "";
+            tasks.forEach((task, index) => {
+                const li = document.createElement('li');
+                //leftDiv(CheckBox,Text)
+                const leftDiv = document.createElement('div');
+                leftDiv.className = 'task-left';
+
+                const checkBox = document.createElement('input');
+                checkBox.type = 'checkBox';
+                checkBox.className = 'task-checkBox';
+                checkBox.checked = task.done;
+                checkBox.onchange = () => toggleDone(index);
+
+                const taskSpan = document.createElement('span');
+                taskSpan.className = 'task-text';
+                taskSpan.textContent = task.text;
+                leftDiv.appendChild(checkBox);
+                leftDiv.appendChild(taskSpan);
+
+                //Buttons
+                const buttonContainer = document.createElement('div');
+                buttonContainer.className = 'task-buttons';
+
+                const editButton = document.createElement('button');
+                editButton.textContent = 'Edit';
+                editButton.onclick = function () { enterEditMode(li, taskSpan, index) };
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = "Delete";
+                deleteButton.className = 'delete-btn';
+                deleteButton.onclick = function () {
+                    tasks.splice(index, 1);
+                    displayTasks();
+                }
+
+                buttonContainer.appendChild(editButton);
+                buttonContainer.appendChild(deleteButton);
+
+                li.appendChild(leftDiv);
+                li.appendChild(buttonContainer);
+                taskList.appendChild(li);
+            });
+        }
+
+        function enterEditMode(li, taskSpan, index) {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'edit-input';
+            input.value = tasks[index].text;
+
+            const saveButton = document.createElement('button');
+            saveButton.textContent = 'Save';
+            saveButton.className = 'save-btn'
+            saveButton.onclick = function () {
+                const updatedText = input.value.trim();
+                if (updatedText !== "") {
+                    tasks[index].text = updatedText;
+                    displayTasks();
+                }
+            };
+
+            const cancelButton = document.createElement('button');
+            cancelButton.textContent = 'Cancel';
+            cancelButton.onclick = function () {
+                displayTasks();
+            };
+
+            const leftDiv = li.querySelector('.task-left');
+            leftDiv.innerHTML = '';
+            leftDiv.appendChild(input);
+            const buttonContainer = li.querySelector('.task-buttons');
+            buttonContainer.innerHTML = "";
+            buttonContainer.appendChild(saveButton);
+            buttonContainer.appendChild(cancelButton);
+        }
+
+        function toggleDone(index){
+            tasks[index].done = !tasks[index].done;
+            displayTasks();
+        }
+    </script>
+</body>
+
+</html>
